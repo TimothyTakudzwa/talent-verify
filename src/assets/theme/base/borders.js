@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Soft UI Dashboard React - v3.1.0
+* Talent Verify React - v3.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-pro-react
@@ -14,15 +14,15 @@ Coded by www.creative-tim.com
 */
 
 /**
- * The base border styles for the Soft UI Dashboard React.
+ * The base border styles for the Talent Verify React.
  * You can add new border width, border color or border radius using this file.
- * You can customized the borders value for the entire Soft UI Dashboard React using thie file.
+ * You can customized the borders value for the entire Talent Verify React using thie file.
  */
 
-// Soft UI Dashboard React Base Styles
+// Talent Verify React Base Styles
 import colors from "assets/theme/base/colors";
 
-// Soft UI Dashboard React Helper Functions
+// Talent Verify React Helper Functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
 const { grey } = colors;

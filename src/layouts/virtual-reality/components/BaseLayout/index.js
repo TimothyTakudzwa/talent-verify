@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useEffect, useState } from "react";
 
@@ -21,19 +8,19 @@ import { useLocation } from "react-router-dom";
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
-// Soft UI Dashboard React components
+// Talent Verify React components
 import SoftBox from "components/SoftBox";
 
-// Soft UI Dashboard React examples
+// Talent Verify React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Sidenav from "examples/Sidenav";
 
-// Soft UI Dashboard React context
+// Talent Verify React context
 import { useSoftUIController, setMiniSidenav, setLayout, setTransparentSidenav } from "context";
 
-// Soft UI Dashboard React routes
+// Talent Verify React routes
 import routes from "routes";
 
 // Custom styles for the BaseLayout
@@ -83,7 +70,7 @@ function BaseLayout({ children }) {
         <SoftBox display={{ xs: "block", lg: "none" }}>
           <Sidenav
             brand={brand}
-            brandName="Soft UI Dashboard PRO"
+            brandName="Talent Verify PRO"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
@@ -94,7 +81,7 @@ function BaseLayout({ children }) {
             <Sidenav
               color={sidenavColor}
               brand={brand}
-              brandName="Soft UI Dashboard PRO"
+              brandName="Talent Verify PRO"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}

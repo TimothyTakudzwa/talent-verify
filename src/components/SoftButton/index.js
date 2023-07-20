@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Soft UI Dashboard React - v1.0.0
+* Talent Verify React - v1.0.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-pro-react
