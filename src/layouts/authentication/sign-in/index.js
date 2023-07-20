@@ -13,9 +13,12 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftInput from "components/SoftInput";
 import SoftButton from "components/SoftButton";
+import { Card, CardContent, Typography, TextField, Button, InputLabel } from '@mui/material';
+
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
+
 
 // Images
 import curved9 from "assets/images/curved-images/curved-6.jpg";
@@ -31,61 +34,57 @@ function SignIn() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('Form submitted:', formData);
+    // Add your login logic here (e.g., API call, validation, etc.)
+  };
+
   return (
     <CoverLayout
       title="Welcome back"
       description="Enter your username and password to sign in"
       image={curved9}
     >
-      <SoftBox component="form" role="form">
-        <SoftBox mb={2}>
-          <SoftBox mb={1} ml={0.5}>
-            <SoftTypography component="label" variant="caption" fontWeight="bold">
-              Email
+     
+
+     <Card>
+      <CardContent>
+        
+        <form onSubmit={handleSubmit}>
+        <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Username
             </SoftTypography>
-          </SoftBox>
-          <SoftInput type="email" placeholder="Email" />
-        </SoftBox>
-        <SoftBox mb={2}>
-          <SoftBox mb={1} ml={0.5}>
-            <SoftTypography component="label" variant="caption" fontWeight="bold">
+          <TextField
+            fullWidth
+           
+            name="username"
+            value={formData.username}
+            onChange={handleInputChange}
+            margin="normal"
+            variant="outlined"
+          />
+          <SoftTypography component="label" variant="caption" fontWeight="bold">
               Password
             </SoftTypography>
-          </SoftBox>
-          <SoftInput type="password" placeholder="Password" />
-        </SoftBox>
-        <SoftBox display="flex" alignItems="center">
-          <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-          <SoftTypography
-            variant="button"
-            fontWeight="regular"
-            onClick={handleSetRememberMe}
-            sx={{ cursor: "pointer", userSelect: "none" }}
-          >
-            &nbsp;&nbsp;Remember me
-          </SoftTypography>
-        </SoftBox>
-        <SoftBox mt={4} mb={1}>
-          <SoftButton variant="gradient" color="info" fullWidth>
-            sign in
-          </SoftButton>
-        </SoftBox>
-        <SoftBox mt={3} textAlign="center">
-          <SoftTypography variant="button" color="text" fontWeight="regular">
-            Don&apos;t have an account?{" "}
-            <SoftTypography
-              component={Link}
-              to="/authentication/sign-up"
-              variant="button"
-              color="info"
-              fontWeight="medium"
-              textGradient
-            >
-              Sign up
-            </SoftTypography>
-          </SoftTypography>
-        </SoftBox>
-      </SoftBox>
+          <TextField
+            fullWidth
+           
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            type="password"
+            margin="normal"
+            variant="outlined"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Login
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+     
+      
     </CoverLayout>
   );
 }
