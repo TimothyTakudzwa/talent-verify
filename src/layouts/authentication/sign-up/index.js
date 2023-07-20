@@ -36,7 +36,7 @@ function SignUp() {
       description="Lets Start by registering your company"
       image={curved6}
     >
-      <Card>
+      <Card width="500px">
   <SoftBox p={3} mb={1} textAlign="center">
     <SoftTypography variant="h5" fontWeight="medium">
       Register Company
