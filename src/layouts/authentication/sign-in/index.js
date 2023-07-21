@@ -1,42 +1,63 @@
+import React, { useState } from "react";
+import { TextField, Button, CircularProgress, Alert, Collapse, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
-
-import { useState } from "react";
-
-// react-router-dom components
-import { Link } from "react-router-dom";
-
-// @mui material components
-import Switch from "@mui/material/Switch";
-
-// Talent Verify React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-import SoftInput from "components/SoftInput";
-import SoftButton from "components/SoftButton";
-import { Card, CardContent, Typography, TextField, Button, InputLabel } from '@mui/material';
-
-
-// Authentication layout components
+import { login } from "services/auth";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
-
-// Images
 import curved9 from "assets/images/curved-images/curved-6.jpg";
+import SoftTypography from "components/SoftTypography";
+
+
 
 function SignIn() {
   const [rememberMe, setRememberMe] = useState(true);
-
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+  const alertComponent = (<Alert severity='error' action={
+    <IconButton
+      aria-label="close"
+      color="inherit"
+      size="small"
+      onClick={() => {
+        setAlert(false);
+      }}
+    >
+      <CloseIcon fontSize="inherit" />
+    </IconButton>
+  }>{alertContent}</Alert>);
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  
+  const [alert, setAlert] = useState(false);
+    
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
+    setIsLoading(true);
+    try {
+      // Make the API request to login
+      const response = await login(formData.username, formData.password);
+      console.log("Login response:", response);
+      localStorage.setItem("token", response.access);
+      
+      // Show an alert if response.status is 200 (You can use MUI Alert here)
+      setIsLoading(false);
+    } catch (error) {
+      setAlertContent('Invalid Username or Password');
+      setAlert(true);
+      console.error("An error occurred during login:", error);
+      setIsLoading(false);
+    }
+    // add 2 seconds delay
+    
+    // setAlert(false);
     // Add your login logic here (e.g., API call, validation, etc.)
   };
 
@@ -46,45 +67,44 @@ function SignIn() {
       description="Enter your username and password to sign in"
       image={curved9}
     >
-     
-
-     <Card>
-      <CardContent>
-        
-        <form onSubmit={handleSubmit}>
-        <SoftTypography component="label" variant="caption" fontWeight="bold">
+      <Collapse in={alert}>{ alertComponent }</Collapse>
+      
+      <form onSubmit={handleSubmit}>
+      <SoftTypography component="label" variant="caption" fontWeight="bold">
               Username
             </SoftTypography>
-          <TextField
-            fullWidth
-           
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            margin="normal"
-            variant="outlined"
-          />
-          <SoftTypography component="label" variant="caption" fontWeight="bold">
+        <TextField
+          fullWidth
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
+         
+          variant="outlined"
+          margin="normal"
+        />
+        <SoftTypography component="label" variant="caption" fontWeight="bold">
               Password
             </SoftTypography>
-          <TextField
-            fullWidth
-           
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            type="password"
-            margin="normal"
-            variant="outlined"
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Login
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-     
-      
+        <TextField
+          fullWidth
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          type="password"
+          
+          variant="outlined"
+          margin="normal"
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} /> : "Login"}
+        </Button>
+      </form>
     </CoverLayout>
   );
 }
