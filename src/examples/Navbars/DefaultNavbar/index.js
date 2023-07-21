@@ -89,13 +89,13 @@ function DefaultNavbar({ transparent, light, action }) {
           <DefaultNavbarLink
             icon="account_circle"
             name="sign up"
-            route="/authentication/sign-up"
+            route="/register"
             light={light}
           />
           <DefaultNavbarLink
             icon="key"
             name="sign in"
-            route="/authentication/sign-in"
+            route="/"
             light={light}
           />
         </SoftBox>
