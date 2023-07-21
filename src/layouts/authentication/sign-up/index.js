@@ -156,7 +156,7 @@ function SignUp() {
       await registerUser(userData);
       setAlertType("success");
       setAlertContent("User registered successfully");
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
      
 
