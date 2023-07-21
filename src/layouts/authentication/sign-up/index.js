@@ -1,116 +1,213 @@
+import React, { useState } from "react";
+import { TextField, Button, CircularProgress, Alert, Collapse, IconButton, Grid } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
+import { login } from "services/auth";
+import CoverLayout from "layouts/authentication/components/CoverLayout";
 
-import { useState } from "react";
-
-// react-router-dom components
-import { Link } from "react-router-dom";
-
-// @mui material components
-import Card from "@mui/material/Card";
-import Checkbox from "@mui/material/Checkbox";
-
-// Talent Verify React components
-import SoftBox from "components/SoftBox";
+import curved9 from "assets/images/curved-images/curved-6.jpg";
 import SoftTypography from "components/SoftTypography";
-import SoftInput from "components/SoftInput";
-import SoftButton from "components/SoftButton";
+import SoftBox from "components/SoftBox";
+import { createCompany } from "services/company";
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
-// Authentication layout components
-import BasicLayout from "layouts/authentication/components/BasicLayout";
-import Socials from "layouts/authentication/components/Socials";
-import Separator from "layouts/authentication/components/Separator";
 
-// Images
-import curved6 from "assets/images/curved-images/curved14.jpg";
 
 function SignUp() {
-  const [agreement, setAgremment] = useState(true);
+  const [rememberMe, setRememberMe] = useState(true);
+  const [formData, setFormData] = useState({ name: "", email: "", registration_number: "", date_of_registration: "", contact_person: "", contact_number: "", number_of_employees: "", address:"" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+  const navigate = useNavigate();
 
-  const handleSetAgremment = () => setAgremment(!agreement);
+  const alertComponent = (<Alert severity='error' action={
+    <IconButton
+      aria-label="close"
+      color="inherit"
+      size="small"
+      onClick={() => {
+        setAlert(false);
+      }}
+    >
+      <CloseIcon fontSize="inherit" />
+    </IconButton>
+  }>{alertContent}</Alert>);
+  const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
-  
+  const [alert, setAlert] = useState(false);
+
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log("Form submitted:", formData);
+    setIsLoading(true);
+    try {
+      // Make the API request to create company 
+      response = await createCompany(formData);
+      console.log("Registration response:", response);
+      setIsLoading(false);
+    } catch (error) {
+      setAlertContent('Registration Failed');
+      setAlert(true);
+      console.error("An error occurred during registration:", error);
+      setIsLoading(false);
+    }
+    // add 2 seconds delay
+
+    // setAlert(false);
+    // Add your login logic here (e.g., API call, validation, etc.)
+  };
 
   return (
-    <BasicLayout
-      title="Welcome!"
-      description="Lets Start by registering your company"
-      image={curved6}
+    <CoverLayout
+      title="Register Company"
+      description="To get started please enter your details below."
+      image={curved9}
     >
-      <Card width="500px">
-  <SoftBox p={3} mb={1} textAlign="center">
-    <SoftTypography variant="h5" fontWeight="medium">
-      Register Company
-    </SoftTypography>
-  </SoftBox>
-  
-  <SoftBox pt={2} pb={3} px={3}>
-    <SoftBox component="form" role="form">
-      <SoftBox mb={2}>
-        <SoftInput placeholder="Company Name"  />
-      </SoftBox>
-      {/* Registration Number */}
-      <SoftBox mb={2}>
-        <SoftInput placeholder="Registration Number"  />
-      </SoftBox>
-      {/* Date of Regisration  */}
-      <SoftBox mb={2}>
-        <SoftInput type="date" placeholder="Date of Registration"  />
-      </SoftBox>
-      {/* Address */}
-      <SoftBox mb={2}>
-        <SoftInput placeholder="Address"  />
-      </SoftBox>
-      <SoftBox mb={2}>
-        <SoftInput type="email" placeholder="Email"  />
-      </SoftBox>
-      <SoftBox mb={2}>
-        <SoftInput type="password" placeholder="Password" />
-      </SoftBox>
-      <SoftBox display="flex" alignItems="center">
-        <Checkbox checked={agreement} onChange={handleSetAgremment} />
-        <SoftTypography
-          variant="button"
-          fontWeight="regular"
-          onClick={handleSetAgremment}
-          sx={{ cursor: "pointer", userSelect: "none" }}
-        >
-          &nbsp;&nbsp;I agree the&nbsp;
-        </SoftTypography>
-        <SoftTypography
-          component="a"
-          href="#"
-          variant="button"
-          fontWeight="bold"
-          textGradient
-        >
-          Terms and Conditions
-        </SoftTypography>
-      </SoftBox>
-      <SoftBox mt={4} mb={1}>
-        <SoftButton variant="gradient" color="dark" fullWidth>
-          sign up
-        </SoftButton>
-      </SoftBox>
-      <SoftBox mt={3} textAlign="center">
-        <SoftTypography variant="button" color="text" fontWeight="regular">
-          Already have an account?&nbsp;
-          <SoftTypography
-            component={Link}
-            to="/authentication/sign-in"
-            variant="button"
-            color="dark"
-            fontWeight="bold"
-            textGradient
-          >
-            Sign in
-          </SoftTypography>
-        </SoftTypography>
-      </SoftBox>
-    </SoftBox>
-  </SoftBox>
-</Card>
+      <Collapse in={alert}>{alertComponent}</Collapse>
 
-    </BasicLayout>
+      <form onSubmit={handleSubmit}>
+      <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Company Name
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Company Address
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Registration Date
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="date_of_registration"
+              value={formData.date_of_registration}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+   
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Registration Number
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="registration_number"
+              value={formData.registration_number}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Contact Person
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="contact_person"
+              value={formData.contact_person}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Contact Phone Number
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="contact_number"
+              value={formData.contact_number}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Company Email
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <SoftTypography component="label" variant="caption" fontWeight="bold">
+              Number of Employees
+            </SoftTypography>
+            <TextField
+            required
+              fullWidth
+              name="number_of_employees"
+              value={formData.number_of_employees}
+              onChange={handleInputChange}
+              variant="outlined"
+              margin="normal"
+            />
+          </Grid>
+        </Grid>
+        <SoftBox mb={2} />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} /> : "Login"}
+        </Button>
+      </form>
+    </CoverLayout>
   );
 }
 
