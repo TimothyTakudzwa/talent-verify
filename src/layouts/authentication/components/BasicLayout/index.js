@@ -60,14 +60,8 @@ function BasicLayout({ title, description, image, children }) {
           </Grid>
         </Grid>
       </SoftBox>
-      <SoftBox mt={{ xs: -26, lg: -24 }} px="auto" width="calc(100% )" mx="auto">
-        <Grid container spacing={1} justifyContent="center">
-          <Grid item xs={5} sm={9} md={5} lg={4} xl={3}>
-            {children}
-          </Grid>
-        </Grid>
-      </SoftBox>
-      <Footer />
+      
+      
     </PageLayout>
   );
 }

@@ -24,13 +24,14 @@ function CoverLayout({ color, header, title, description, image, top, children }
         action={{
           type: "external",
           route: "https://creative-tim.com/product/soft-ui-dashboard-react",
-          label: "free download",
+          label: "Hire Me",
           color: "dark",
         }}
       />
       <Grid
         container
         justifyContent="center"
+        width="140%"
         sx={{
           minHeight: "75vh",
           margin: 0,
@@ -43,7 +44,7 @@ function CoverLayout({ color, header, title, description, image, top, children }
                 <>
                   <SoftBox mb={1}>
                     <SoftTypography variant="h3" fontWeight="bold" color={color} textGradient>
-                      {title}
+                      {title}  
                     </SoftTypography>
                   </SoftBox>
                   <SoftTypography variant="body2" fontWeight="regular" color="text">
@@ -57,13 +58,13 @@ function CoverLayout({ color, header, title, description, image, top, children }
             <SoftBox p={3}>{children}</SoftBox>
           </SoftBox>
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={7} mt={7}>
           <SoftBox
             height="100%"
             display={{ xs: "none", md: "block" }}
             position="relative"
             right={{ md: "-12rem", xl: "-16rem" }}
-            mr={-16}
+            mr={-14}
             sx={{
               transform: "skewX(-10deg)",
               overflow: "hidden",
@@ -82,7 +83,7 @@ function CoverLayout({ color, header, title, description, image, top, children }
           </SoftBox>
         </Grid>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </PageLayout>
   );
 }

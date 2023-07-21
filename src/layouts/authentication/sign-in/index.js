@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { TextField, Button, CircularProgress, Alert, Collapse, IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 import { login } from "services/auth";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 import curved9 from "assets/images/curved-images/curved-6.jpg";
 import SoftTypography from "components/SoftTypography";
+import SoftBox from "components/SoftBox";
 
 
 
@@ -15,6 +17,8 @@ function SignIn() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [alertContent, setAlertContent] = useState('');
+  const navigate = useNavigate();
+  
   const alertComponent = (<Alert severity='error' action={
     <IconButton
       aria-label="close"
@@ -46,6 +50,8 @@ function SignIn() {
       const response = await login(formData.username, formData.password);
       console.log("Login response:", response);
       localStorage.setItem("token", response.access);
+      // Redirect to the dashboard
+      navigate('/dashboard', { replace: true });
       
       // Show an alert if response.status is 200 (You can use MUI Alert here)
       setIsLoading(false);
@@ -95,6 +101,8 @@ function SignIn() {
           variant="outlined"
           margin="normal"
         />
+        {/* Add space */}
+        <SoftBox mb={2} />
         <Button
           type="submit"
           variant="contained"
