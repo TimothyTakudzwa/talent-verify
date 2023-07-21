@@ -1,7 +1,9 @@
+
 import React, { useState } from "react";
 import { TextField, Button, CircularProgress, Alert, Collapse, IconButton, Grid } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from "react-hook-form";
 
 import { login } from "services/auth";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
@@ -18,9 +20,20 @@ import DatePicker from '@mui/lab/DatePicker';
 
 function SignUp() {
   const [rememberMe, setRememberMe] = useState(true);
-  const [formData, setFormData] = useState({ name: "", email: "", registration_number: "", date_of_registration: "", contact_person: "", contact_number: "", number_of_employees: "", address:"" });
+  const [formData, setFormData] = useState({ name: "", email: "", registration_number: "", date_of_registration: "", contact_person: "", contact_phone: "", number_of_employees: "", address:"" });
   const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [date_of_registration, setDate_of_registration] = useState('');
+  const [registration_number, setRegistration_number] = useState('');
+  const [contact_person, setContact_person] = useState('');
+  const [contact_phone, setContact_phone] = useState('');
+  const [email, setEmail] = useState('');
+  const [number_of_employees, setNumber_of_employees] = useState('');
+  
   const [alertContent, setAlertContent] = useState('');
+  // const { register, handleSubmit, reset, control, setValue } = useForm();
+  
   const navigate = useNavigate();
 
   const alertComponent = (<Alert severity='error' action={
@@ -80,6 +93,7 @@ function SignUp() {
             <SoftTypography component="label" variant="caption" fontWeight="bold">
               Company Name
             </SoftTypography>
+            
             <TextField
             required
               fullWidth
@@ -158,8 +172,8 @@ function SignUp() {
             <TextField
             required
               fullWidth
-              name="contact_number"
-              value={formData.contact_number}
+              name="contact_phone"
+              value={formData.contact_phone}
               onChange={handleInputChange}
               variant="outlined"
               margin="normal"
