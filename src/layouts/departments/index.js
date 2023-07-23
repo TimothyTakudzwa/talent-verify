@@ -151,6 +151,14 @@ function DepartmentsTable() {
 
   const handleUploadCsv2 = () => {
   console.log(csvData);
+  for (let i = 0; i < csvData.length; i++) {
+    const data = {
+      name: csvData[i].name,
+      company: 1
+    }
+    console.log(data);
+    createDepartment(data);
+  }
   }
 
   return (
@@ -195,7 +203,10 @@ function DepartmentsTable() {
                 </Button>
               </Box>
               <form>
-
+                {/* red text instructing the person to upload csv with column name */}
+                <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
+                  Please upload a CSV file with the column name  for the department name
+                </Typography>
                 <TextField
                   id="department-name"
                   type="file"
