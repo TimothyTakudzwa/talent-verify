@@ -59,6 +59,10 @@ function DepartmentsTable() {
   const [csvModal2Open, setCsvModal2Open] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
   const [csvData, setCsvData] = useState([]);
+  const [hasError, setHasError] = useState(false);
+  const [clean, setIsClean] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [cleanCsvData, setCleanCsvData] = useState([]);
 
 
 
@@ -141,9 +145,25 @@ function DepartmentsTable() {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
-        console.log(results.data);
-        setCsvData(results.data);
-        console.log(csvData);
+        const data = results.data;
+        console.log(data);
+        // Check if "name" field is present in the data
+        const hasNameField = data.some((row) => row.hasOwnProperty("name"));
+  
+        if (!hasNameField) {
+          console.log("Invalid CSV: Missing 'name' field");
+          setHasError(true);
+          setErrorMessage("Invalid CSV: Missing 'name' field");
+          return;
+        }
+        setHasError(false);
+        setIsClean(true);
+        // remove empty rows
+        const cleanData = data.filter((row) => row.name !== "");
+
+
+  
+        setCsvData(cleanData);
       },
     });
     
@@ -157,7 +177,8 @@ function DepartmentsTable() {
       company: 1
     }
     console.log(data);
-    createDepartment(data);
+    
+    // createDepartment(data);
   }
   }
 
@@ -223,6 +244,8 @@ function DepartmentsTable() {
                     },
                   }}
                 />
+                {hasError?<Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography>  : null}
+                {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
                 <Button
                   variant="contained"
                   color="primary"
