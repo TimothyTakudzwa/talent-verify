@@ -13,6 +13,9 @@ import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Stack from "@mui/material/Stack";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 // CircularProgress
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from "@mui/material/IconButton";
@@ -36,6 +39,8 @@ function DepartmentsTable() {
   const handleClose = () => setOpen(false);
   const [departmentName, setDepartmentName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [csvModalOpen, setCsvModalOpen] = useState(false);
+
 
   // State to store online employee data
   const [onlineRows, setOnlineRows] = useState([]);
@@ -86,12 +91,37 @@ function DepartmentsTable() {
 
 
   };
+  const buttonStyle = {
+    boxShadow: 3,
+    mr: 2,
+    color: '#344767',
+  };
+  
+  const handleCsvFileChange = (event) => {
+    const file = event.target.files[0];
+    setCsvFile(file);
+  };
 
   return (
     <Card>
       <SoftBox justifyContent="space-between" p={2}>
 
-        <Button onClick={handleOpen} sx={buttonStyle}> <AddIcon/> Create Department</Button>
+      <Stack direction="row" spacing={2} alignItems="center">
+  <Button variant="outlined" onClick={handleOpen} sx={buttonStyle}>
+    <AddIcon />
+    Create Department
+  </Button>
+  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+    Upload from CSV 
+  </Button>
+  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+    Upload from Excel
+  </Button>
+  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+    Upload from Text
+  </Button>
+</Stack>
+
         <Modal
           aria-labelledby="transition-modal-title"
           aria-describedby="transition-modal-description"
@@ -165,19 +195,19 @@ function DepartmentsTable() {
 
               console.log('Filtering model changed:', model);
             }}
-           autoPageSize
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 10 },
+              },
+            }}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
+            // checkboxSelection
           />
         </SoftBox>
       </div>
     </Card>
   );
 }
-
-const buttonStyle = {
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-};
 const style = {
   position: 'absolute',
   top: '50%',
