@@ -12,7 +12,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar , GridValueGetterParams } from '@mui/x-data-grid';
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -20,21 +20,22 @@ import projectsTableData from "layouts/tables/data/projectsTableData";
 
 function EmployeesTable({  }) {
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'firstName', headerName: 'First name', width: 130 },
-    { field: 'lastName', headerName: 'Last name', width: 130 },
+    { field: 'id', headerName: 'ID',flex: 1},
+    { field: 'firstName', headerName: 'First name',flex: 1 },
+    { field: 'lastName', headerName: 'Last name', flex: 1},
     {
       field: 'age',
       headerName: 'Age',
       type: 'number',
-      width: 90,
+      flex: 1
     },
     {
       field: 'fullName',
       headerName: 'Full name',
       description: 'This column has a value getter and is not sortable.',
+      flex: 1,
       sortable: false,
-      width: 160,
+     
       valueGetter: (params) =>
         `${params.row.firstName || ''} ${params.row.lastName || ''}`,
     },
@@ -54,9 +55,10 @@ function EmployeesTable({  }) {
   
   return (
     <Card>
-      <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+      <SoftBox  justifyContent="space-between"  p={3}>
         <SoftTypography variant="h6">Employees</SoftTypography>
       </SoftBox>
+      <div style={{  width: '100%' }}>
       <SoftBox
         sx={{
           "& .MuiTableRow-root:not(:last-child)": {
@@ -70,6 +72,7 @@ function EmployeesTable({  }) {
         <DataGrid
           rows={rows}
           columns={columns}
+          slots={{ toolbar: GridToolbar }}
           filterModel={{
             items: [{ columnField: 'firstName', operatorValue: 'contains', value: '' }],
           }}
@@ -82,10 +85,11 @@ function EmployeesTable({  }) {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
           checkboxSelection
         />
       </SoftBox>
+      </div>
     </Card>
   );
 }
