@@ -58,6 +58,7 @@ function DepartmentsTable() {
   };
   const [csvModal2Open, setCsvModal2Open] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
+  const [csvData, setCsvData] = useState([]);
 
 
 
@@ -135,15 +136,22 @@ function DepartmentsTable() {
 
 
   const changeHandler = (event) => {
-    console.log(event.target.files[0])
+    // console.log(event.target.files[0])
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
-        console.log(results.data)
+        console.log(results.data);
+        setCsvData(results.data);
+        console.log(csvData);
       },
     });
+    
   };
+
+  const handleUploadCsv2 = () => {
+  console.log(csvData);
+  }
 
   return (
     <Card>
@@ -207,7 +215,7 @@ function DepartmentsTable() {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleCreateDepartment}
+                  onClick={handleUploadCsv2}
                   sx={{ mt: 3, width: '100%' }}
                 >
                   {isLoading ? <CircularProgress size={24} /> : "Create Department"}
