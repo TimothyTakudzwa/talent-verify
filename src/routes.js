@@ -23,8 +23,8 @@
 */
 
 // Talent Verify React layouts
-import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import Employees from "layouts/dashboard";
+
 import Billing from "layouts/billing";
 import VirtualReality from "layouts/virtual-reality";
 import RTL from "layouts/rtl";
@@ -41,6 +41,7 @@ import SpaceShip from "examples/Icons/SpaceShip";
 import CustomerSupport from "examples/Icons/CustomerSupport";
 import CreditCard from "examples/Icons/CreditCard";
 import Cube from "examples/Icons/Cube";
+import Departments from "layouts/departments";
 
 const routes = [
   {
@@ -49,25 +50,17 @@ const routes = [
     key: "dashboard",
     route: "/dashboard",
     icon: <Shop size="12px" />,
-    component: <Dashboard />,
+    component: <Employees />,
     noCollapse: true,
   },
+
   {
     type: "collapse",
     name: "Departments",
-    key: "tables",
-    route: "/tables",
-    icon: <Office size="12px" />,
-    component: <Tables />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Employment History",
-    key: "billing",
-    route: "/billing",
+    key: "departments",
+    route: "/departments",
     icon: <CreditCard size="12px" />,
-    component: <Billing />,
+    component: <Departments />,
     noCollapse: true,
   },
   {
