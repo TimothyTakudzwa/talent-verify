@@ -15,6 +15,11 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Stack from "@mui/material/Stack";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+
 
 // CircularProgress
 import CircularProgress from '@mui/material/CircularProgress';
@@ -40,6 +45,8 @@ function DepartmentsTable() {
   const [departmentName, setDepartmentName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [csvModalOpen, setCsvModalOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
+
 
 
   // State to store online employee data
@@ -58,6 +65,20 @@ function DepartmentsTable() {
 
     fetchOnlineDepartments();
   }, []);
+
+  const handleUploadCsv = () => {
+    if (!csvFile) {
+      console.log("No CSV file selected");
+      return;
+    }
+
+    // Here, you can perform the CSV file upload action using 'csvFile'
+    console.log("Uploading CSV file:", csvFile);
+
+    // Reset the file input after uploading
+    setCsvFile(null);
+  };
+
 
   const handleCreateDepartment = async () => {
     setIsLoading(true);
@@ -96,31 +117,60 @@ function DepartmentsTable() {
     mr: 2,
     color: '#344767',
   };
-  
+
   const handleCsvFileChange = (event) => {
     const file = event.target.files[0];
     setCsvFile(file);
+  };
+
+  const handleCsvModalClose = () => {
+    setCsvModalOpen(false);
   };
 
   return (
     <Card>
       <SoftBox justifyContent="space-between" p={2}>
 
-      <Stack direction="row" spacing={2} alignItems="center">
-  <Button variant="outlined" onClick={handleOpen} sx={buttonStyle}>
-    <AddIcon />
-    Create Department
-  </Button>
-  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
-    Upload from CSV 
-  </Button>
-  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
-    Upload from Excel
-  </Button>
-  <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
-    Upload from Text
-  </Button>
-</Stack>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Button variant="outlined" onClick={handleOpen} sx={buttonStyle}>
+            <AddIcon />
+            Create Department
+          </Button>
+          <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle} onClick={() => setCsvModalOpen(true)}>
+            Upload from CSV
+          </Button>
+
+          <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+            Upload from Excel
+          </Button>
+          <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+            Upload from Text
+          </Button>
+        </Stack>
+        <Dialog
+          open={csvModalOpen}
+          onClose={handleCsvModalClose}
+          aria-labelledby="csv-upload-dialog-title"
+        >
+          <DialogTitle id="csv-upload-dialog-title">Select CSV File</DialogTitle>
+          <DialogContent>
+            {/* Add your file input and other content for CSV file selection here */}
+            <input
+              type="file"
+              accept=".csv"
+              style={{ display: "none" }}
+              onChange={handleCsvFileChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCsvModalClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleUploadCsv} color="primary">
+              Upload
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Modal
           aria-labelledby="transition-modal-title"
@@ -175,7 +225,7 @@ function DepartmentsTable() {
         <SoftBox
           sx={{
             padding: 2,
-            
+
             "& .MuiTableRow-root:not(:last-child)": {
               "& td": {
                 borderBottom: ({ borders: { borderWidth, borderColor } }) =>
@@ -184,9 +234,9 @@ function DepartmentsTable() {
             },
           }}
         >
-          <DataGrid 
-          // padding={10}
-          
+          <DataGrid
+            // padding={10}
+
             rows={onlineRows}
             columns={onlineColumns}
             slots={{ toolbar: GridToolbar }}
@@ -201,7 +251,7 @@ function DepartmentsTable() {
               },
             }}
             pageSizeOptions={[5, 10, 20, 50, 100]}
-            // checkboxSelection
+          // checkboxSelection
           />
         </SoftBox>
       </div>
@@ -227,13 +277,13 @@ function Departments() {
       {/* <DashboardNavbar /> */}
       <SoftBox py={3}>
         <SoftBox mb={3} sx={{
-       
-        width: '100%',
-        '& .super-app-theme--header': {
-          backgroundColor: '#344767',
-          color: '#ffffff',
-        },
-      }}>
+
+          width: '100%',
+          '& .super-app-theme--header': {
+            backgroundColor: '#344767',
+            color: '#ffffff',
+          },
+        }}>
           {/* Render the DepartmentsTable component */}
           <DepartmentsTable />
         </SoftBox>
