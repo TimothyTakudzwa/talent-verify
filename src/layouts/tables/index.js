@@ -13,12 +13,17 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 import { DataGrid, GridToolbar , GridValueGetterParams } from '@mui/x-data-grid';
+import { useEffect, useState } from "react";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
+import { getEmployees } from "services/company";
 
 function EmployeesTable({  }) {
+
+  
+  
   const columns = [
     { field: 'id', headerName: 'ID',flex: 1},
     { field: 'firstName', headerName: 'First name',flex: 1 },
@@ -52,6 +57,39 @@ function EmployeesTable({  }) {
     { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
     { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
   ];
+
+  const onlineColumns = [
+    { field: 'id', headerName: 'ID',flex: 1},
+    // name
+    { field: 'name', headerName: 'Full name',flex: 1 },
+    // department
+    // company
+    { field: 'company', headerName: 'Company', flex: 1},
+    { field: 'department', headerName: 'Department', flex: 1},
+    // role
+    { field: 'role', headerName: 'Role', flex: 1},
+    // date started
+    { field: 'date_started', headerName: 'Date started', flex: 1},
+    // date ended
+    { field: 'date_ended', headerName: 'Date ended', flex: 1},
+    // id number
+    { field: 'id_number', headerName: 'ID number', flex: 1},
+  ];
+
+  const [onlineRows, setOnlineRows] = useState([])
+
+  useEffect(() => {
+    const fetchOnlineEmployees = async () => {
+      var response = await getEmployees();
+      var data = response;
+      console.log(data);
+      setOnlineRows(data)
+    }
+    fetchOnlineEmployees()
+  }, [])
+
+
+
   
   return (
     <Card>
@@ -70,8 +108,8 @@ function EmployeesTable({  }) {
         }}
       >
         <DataGrid
-          rows={rows}
-          columns={columns}
+          rows={onlineRows}
+          columns={onlineColumns}
           slots={{ toolbar: GridToolbar }}
           filterModel={{
             items: [{ columnField: 'firstName', operatorValue: 'contains', value: '' }],

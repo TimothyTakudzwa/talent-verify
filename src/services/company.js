@@ -14,3 +14,13 @@ return axios.post("http://127.0.0.1:8000/api/v1/company/", formData, {
 
 }
 
+export function getEmployees() {
+    return axios.get("http://127.0.0.1:8000/api/v1/employee/", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    }).then((response) => {
+        console.log(response);
+        return response.data;
+    });
+}
