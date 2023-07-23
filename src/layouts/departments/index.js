@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Stack from "@mui/material/Stack";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+// Papa
+import Papa from "papaparse";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -127,61 +129,20 @@ function DepartmentsTable() {
     mr: 2,
     color: '#344767',
   };
-  const fileReader = new FileReader();
-  const [array, setArray] = useState([]);
-  const [csvDepartments, setCsvDepartments] = useState([]);
-  const csvFileToArray = string => {
-    const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
-    const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
-    const array = csvRows.map(i => {
-      const values = i.split(",");
-      const obj = csvHeader.reduce((object, header, index) => {
-        object[header] = values[index];
-        return object;
-      }, {});
-      return obj;
+
+
+
+
+  const changeHandler = (event) => {
+    console.log(event.target.files[0])
+    Papa.parse(event.target.files[0], {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        console.log(results.data)
+      },
     });
-
-    setArray(array);
-    console.log(array);
-  };
-
-
-
-  const handleCsvFileChange = (event) => {
-    const file = event.target.files[0];
-    setCsvFile(file);
-    // console.log("CSV file selected:", file);
-    fileReader.onload = function (event) {
-      const text = event.target.result;
-      csvFileToArray(text);
-    };
-
-    fileReader.readAsText(file);
-    console.log(array);
-    var newArray = [];
-    for (var i = 0; i < array.length; i++) {
-      const firstKey = Object.keys(array[i])[0];
-      const secondKey = Object.keys(array[i])[1];
-      const firstValue = array[i][firstKey];
-      const secondValue = array[i][secondKey];
-
-
-      newArray.push({ id: firstValue, name: secondValue });
-    }
-    // console.log(newArray);
-    setCsvDepartments(newArray);
-    console.log(csvDepartments);
-    setCsvModal2Open(true);
-
-
-    // print the file object on the console
-
-  };
-
-  const handleCsvModalClose = () => {
-    setCsvModalOpen(false);
   };
 
   return (
@@ -234,7 +195,7 @@ function DepartmentsTable() {
                   variant="outlined"
                   fullWidth
                   value={departmentName}
-                  onChange={handleCsvFileChange}
+                  onChange={changeHandler}
                   inputProps={{ accept: ".csv, text/csv" }}
                   sx={{
                     mt: 3,
