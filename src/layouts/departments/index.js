@@ -58,6 +58,8 @@ function DepartmentsTable() {
     setHasError(false);
     setErrorMessage(" ");
     setCsvModalOpen(false);
+    setCsvModal2Open(false);
+    setOpen(false);
   };
   const [csvModal2Open, setCsvModal2Open] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
@@ -111,11 +113,19 @@ function DepartmentsTable() {
     try {
       const response = await createDepartment(data);
       console.log("Create Department response:", response);
+      if (response.status === 201)
       MySwal.fire(
         'Success!',
         'Department created successfully!',
         'success'
       )
+      else{
+        MySwal.fire(
+          'Error!',
+          'Department could not be created!',
+          'error'
+        )
+      }
     }
     catch (error) {
       MySwal.fire(
@@ -185,19 +195,11 @@ function DepartmentsTable() {
       try {
         const response = createDepartment(data);
         console.log("Create Department response:", response);
-        i = i + 1;
-        // MySwal.fire(
-        //   'Success!',
-        //   'Department created successfully!',
-        //   'success'
-        // )
+       
+        departments_created = departments_created + 1;
       }
       catch (error) {
-        // MySwal.fire(
-        //   'Error!',
-        //   'Department could not be created!',
-        //   'error'
-        // );
+        
         console.error("Error creating department:", error);
       }
     }
@@ -311,18 +313,6 @@ function DepartmentsTable() {
               pageSizeOptions={[5, 10, 20, 50, 100]}
             // checkboxSelection
             />
-            {/* <DataGrid
-            columns={onlineColumns}
-            rows={csvDepartments}           
-
-          <List>
-            {csvDepartments.map((dept, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={`ID: ${dept[Object.keys(dept)[0]]}, Name: ${dept[Object.keys(dept)[1]]}`} />
-              </ListItem>
-            ))}
-          </List> */}
-
             <Button
               variant="contained"
               color="primary"
@@ -454,11 +444,12 @@ function Departments() {
           width: '100%',
           '& .super-app-theme--header': {
             backgroundColor: '#344767',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
             color: '#ffffff',
           },
         }}>
           {/* Render the DepartmentsTable component */}
-          <DepartmentsTable />
+          <DepartmentsTable py={2} />
         </SoftBox>
       </SoftBox>
 
