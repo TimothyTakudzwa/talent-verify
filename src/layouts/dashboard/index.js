@@ -559,16 +559,24 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
 
           </Stack>
 
-
+              <Stack direction="row">
           <Button
             variant="contained"
             color="primary"
             onClick={handleCreateEmployee}
-            sx={{ mt: 3, width: '100%' }}
+            sx={{ mt: 3, mr:1, width: '50%' }}
           >
-            {isLoading ? <CircularProgress size={24} /> : "Create Employee"}
+            {isLoading ? <CircularProgress size={24} /> : "Edit Employee"}
           </Button>
-
+          <Button
+            variant="contained"
+            // color="danger"
+            onClick={handleCreateEmployee}
+            sx={{ mt: 3, width: '50%', backgroundColor: '#f44336', color: '#ffffff' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Delete Employee"}
+          </Button>
+</Stack>
         </form>
       </Box>
     </Fade>
