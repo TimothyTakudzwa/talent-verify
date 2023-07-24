@@ -128,10 +128,6 @@ function DepartmentsTable() {
     color: '#344767',
   };
 
-
-
-
-
   const changeHandler = (event) => {
     // console.log(event.target.files[0])
     Papa.parse(event.target.files[0], {
@@ -215,194 +211,13 @@ function DepartmentsTable() {
             Upload from Text
           </Button>
         </Stack>
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          open={csvModalOpen}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={csvModalOpen}>
-            <Box sx={style}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                <Typography id="transition-modal-title" variant="h6" component="h2">
-                  Upload Departments from CSV
-                </Typography>
-                <Button variant="outlined" onClick={handleClose} sx={buttonStyle}>
-                  <CloseIcon />
-                </Button>
-              </Box>
-              <form>
-                {/* red text instructing the person to upload csv with column name */}
-                <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
-                  Please upload a CSV file with the column name  for the department name
-                </Typography>
-                <TextField
-                  id="department-name"
-                  type="file"
-
-                  variant="outlined"
-                  fullWidth
-                  value={departmentName}
-                  onChange={changeHandler}
-                  inputProps={{ accept: ".csv, text/csv" }}
-                  sx={{
-                    mt: 3,
-                    "& label": {
-                      fontSize: "14px", // Adjust the font size as needed
-                    },
-                  }}
-                />
-                {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
-                {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
-                {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
-
-              </form>
-            </Box>
-          </Fade>
-        </Modal>
-        <Modal
-          open={csvModal2Open}
-          onClose={() => setCsvModal2Open(false)}
-          aria-labelledby="csv-upload-modal-title"
-        >
-          <Box sx={csvModalStyle}>
-            <Typography id="csv-upload-modal-title" variant="h6" component="h2">
-              Departments from CSV File
-            </Typography>
-            <DataGrid
-              // padding={10}
-
-              rows={onlineRows}
-              columns={onlineColumns}
-              // slots={{ toolbar: GridToolbar }}
-
-              onFilterModelChange={(model) => {
-
-                console.log('Filtering model changed:', model);
-              }}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
-              }}
-              pageSizeOptions={[5, 10, 20, 50, 100]}
-            // checkboxSelection
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setCsvModal2Open(false)}
-            >
-              Close
-            </Button>
-          </Box>
-        </Modal>
+        {csvUpload(csvModalOpen, handleClose, buttonStyle, departmentName, changeHandler, hasError, errorMessage, clean, csvData, handleUploadCsv2, isLoading)}
+        {uploadFromCSV(csvModal2Open, setCsvModal2Open, onlineRows, onlineColumns)}
 
 
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          open={open}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={open}>
-            <Box sx={style}>
-              <Typography id="transition-modal-title" variant="h6" component="h2">
-                {/* Add a plus icon */}
-                Create Department
-              </Typography>
-
-
-              <form>
-
-                <TextField
-                  id="department-name"
-                  label="Department Name"
-                  variant="outlined"
-                  fullWidth
-                  value={departmentName}
-                  onChange={(e) => setDepartmentName(e.target.value)}
-                  sx={{
-                    mt: 3,
-                    "& label": {
-                      fontSize: "14px", // Adjust the font size as needed
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCreateDepartment}
-                  sx={{ mt: 3, width: '100%' }}
-                >
-                  {isLoading ? <CircularProgress size={24} /> : "Create Department"}
-                </Button>
-
-              </form>
-            </Box>
-          </Fade>
-        </Modal>
+        {createDepartmentModal(open, handleClose, departmentName, setDepartmentName, handleCreateDepartment, isLoading)}
         {/* Upload from excel modal  */}
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          open={excelModalOpen}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={excelModalOpen}>
-            <Box sx={style}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                <Typography id="transition-modal-title" variant="h6" component="h2">
-                  Upload Departments from Excel
-                </Typography>
-                <Button variant="outlined" onClick={handleClose} sx={buttonStyle}>
-                  <CloseIcon />
-                </Button>
-              </Box>
-              <form>
-                {/* red text instructing the person to upload csv with column name */}
-                <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
-                  Please upload a Excel file with the column name  for the department name
-                </Typography>
-                <TextField
-                  id="department-name"
-                  type="file"
-                  variant="outlined"
-                  fullWidth
-                  value={departmentName}
-                  onChange={changeHandler}
-                  inputProps={{ accept: ".xlsx, .xls" }} // Update to accept Excel files
-                  sx={{
-                    mt: 3,
-                    "& label": {
-                      fontSize: "14px", // Adjust the font size as needed
-                    },
-                  }}
-                />
-
-                {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
-                {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
-                {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
-
-              </form>
-            </Box>
-          </Fade>
-        </Modal>
+        {uploadFromExcel(excelModalOpen, handleClose, buttonStyle, departmentName, changeHandler, hasError, errorMessage, clean, csvData, handleUploadCsv2, isLoading)}
 
 
 
@@ -465,6 +280,196 @@ const csvModalStyle = {
   border: "2px solid #000",
   p: 4,
 };
+function createDepartmentModal(open, handleClose, departmentName, setDepartmentName, handleCreateDepartment, isLoading) {
+  return <Modal
+    aria-labelledby="transition-modal-title"
+    aria-describedby="transition-modal-description"
+    open={open}
+    onClose={handleClose}
+    closeAfterTransition
+    BackdropComponent={Backdrop}
+    BackdropProps={{
+      timeout: 500,
+    }}
+  >
+    <Fade in={open}>
+      <Box sx={style}>
+        <Typography id="transition-modal-title" variant="h6" component="h2">
+          {/* Add a plus icon */}
+          Create Department
+        </Typography>
+
+
+        <form>
+
+          <TextField
+            id="department-name"
+            label="Department Name"
+            variant="outlined"
+            fullWidth
+            value={departmentName}
+            onChange={(e) => setDepartmentName(e.target.value)}
+            sx={{
+              mt: 3,
+              "& label": {
+                fontSize: "14px", // Adjust the font size as needed
+              },
+            }} />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateDepartment}
+            sx={{ mt: 3, width: '100%' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Create Department"}
+          </Button>
+
+        </form>
+      </Box>
+    </Fade>
+  </Modal>;
+}
+
+function csvUpload(csvModalOpen, handleClose, buttonStyle, departmentName, changeHandler, hasError, errorMessage, clean, csvData, handleUploadCsv2, isLoading) {
+  return <Modal
+    aria-labelledby="transition-modal-title"
+    aria-describedby="transition-modal-description"
+    open={csvModalOpen}
+    onClose={handleClose}
+    closeAfterTransition
+    BackdropComponent={Backdrop}
+    BackdropProps={{
+      timeout: 500,
+    }}
+  >
+    <Fade in={csvModalOpen}>
+      <Box sx={style}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+          <Typography id="transition-modal-title" variant="h6" component="h2">
+            Upload Departments from CSV
+          </Typography>
+          <Button variant="outlined" onClick={handleClose} sx={buttonStyle}>
+            <CloseIcon />
+          </Button>
+        </Box>
+        <form>
+          {/* red text instructing the person to upload csv with column name */}
+          <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
+            Please upload a CSV file with the column name  for the department name
+          </Typography>
+          <TextField
+            id="department-name"
+            type="file"
+
+            variant="outlined"
+            fullWidth
+            value={departmentName}
+            onChange={changeHandler}
+            inputProps={{ accept: ".csv, text/csv" }}
+            sx={{
+              mt: 3,
+              "& label": {
+                fontSize: "14px", // Adjust the font size as needed
+              },
+            }} />
+          {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
+          {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
+          {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}>  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
+
+        </form>
+      </Box>
+    </Fade>
+  </Modal>;
+}
+
+function uploadFromCSV(csvModal2Open, setCsvModal2Open, onlineRows, onlineColumns) {
+  return <Modal
+    open={csvModal2Open}
+    onClose={() => setCsvModal2Open(false)}
+    aria-labelledby="csv-upload-modal-title"
+  >
+    <Box sx={csvModalStyle}>
+      <Typography id="csv-upload-modal-title" variant="h6" component="h2">
+        Departments from CSV File
+      </Typography>
+      <DataGrid
+        // padding={10}
+        rows={onlineRows}
+        columns={onlineColumns}
+        // slots={{ toolbar: GridToolbar }}
+        onFilterModelChange={(model) => {
+
+          console.log('Filtering model changed:', model);
+        }}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10, 20, 50, 100]} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setCsvModal2Open(false)}
+      >
+        Close
+      </Button>
+    </Box>
+  </Modal>;
+}
+
+function uploadFromExcel(excelModalOpen, handleClose, buttonStyle, departmentName, changeHandler, hasError, errorMessage, clean, csvData, handleUploadCsv2, isLoading) {
+  return <Modal
+    aria-labelledby="transition-modal-title"
+    aria-describedby="transition-modal-description"
+    open={excelModalOpen}
+    onClose={handleClose}
+    closeAfterTransition
+    BackdropComponent={Backdrop}
+    BackdropProps={{
+      timeout: 500,
+    }}
+  >
+    <Fade in={excelModalOpen}>
+      <Box sx={style}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+          <Typography id="transition-modal-title" variant="h6" component="h2">
+            Upload Departments from Excel
+          </Typography>
+          <Button variant="outlined" onClick={handleClose} sx={buttonStyle}>
+            <CloseIcon />
+          </Button>
+        </Box>
+        <form>
+          {/* red text instructing the person to upload csv with column name */}
+          <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
+            Please upload a Excel file with the column name  for the department name
+          </Typography>
+          <TextField
+            id="department-name"
+            type="file"
+            variant="outlined"
+            fullWidth
+            value={departmentName}
+            onChange={changeHandler}
+            inputProps={{ accept: ".xlsx, .xls" }} // Update to accept Excel files
+            sx={{
+              mt: 3,
+              "& label": {
+                fontSize: "14px", // Adjust the font size as needed
+              },
+            }} />
+
+          {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
+          {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
+          {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}>  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
+
+        </form>
+      </Box>
+    </Fade>
+  </Modal>;
+}
+
 // Departments component displays the Dashboard layout with the DepartmentsTable
 function Departments() {
 

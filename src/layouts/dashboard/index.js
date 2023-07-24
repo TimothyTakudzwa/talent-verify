@@ -26,17 +26,15 @@ import InputLabel from '@mui/material/InputLabel';
 
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { getEmployees, getDepartments, createEmployee } from "services/company";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-
-
-
-
-
-
-import { getEmployees, getDepartments } from "services/company";
+const MySwal = withReactContent(Swal)
 
 // EmployeesTable component displays a DataGrid with online employee data
 function EmployeesTable() {
+  
   // Define the columns for the DataGrid
   const onlineColumns = [
     { field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'super-app-theme--header' },
@@ -96,6 +94,42 @@ function EmployeesTable() {
     }
   };
 
+  const handleCreateEmployee = async () => {
+    setIsLoading(true);
+    try {
+      employeeData.company = 1;
+      employeeData.date_ended = employeeData.date_started;
+      const response = await createEmployee(employeeData);
+      console.log(response);
+      setIsLoading(false);
+      setCreateEmployeeModalOpen(false);
+      if (response.status === 201)
+        MySwal.fire(
+          'Success!',
+          'Department created successfully!',
+          'success'
+        )
+      else {
+        MySwal.fire(
+          'Error!',
+          'Department could not be created!',
+          'error'
+        )
+      }
+      
+      // setCreateEmployeeModalOpen(false);
+      fetchOnlineEmployees();
+    } catch (error) {
+      
+      MySwal.fire(
+        'Error!',
+        'Department could not be created!',
+        'error'
+      )
+      console.error("Error creating employee:", error);
+    }
+  };
+
   useEffect(() => {
     // Fetch online employee data and update the state
 
@@ -137,9 +171,7 @@ function EmployeesTable() {
     border: "2px solid #000",
     p: 4,
   };
-  const handleCreateEmployee = (e) => {
-    console.log(employeeData);
-  };
+
 
   function CustomToolbar() {
     return (
@@ -148,6 +180,10 @@ function EmployeesTable() {
         <GridToolbarFilterButton p={3} sx={toolBarStyle} variant="outlined" />
         {/* <GridToolbarDensitySelector /> */}
         <GridToolbarExport sx={toolBarStyle} variant="outlined" />
+        {/* Click on a row to view/edit employee in red  */}
+        <Typography id="transition-modal-title" variant="h6" component="h2" sx={{color:'red'}}>
+            <i>Click on an employee to View/Edit/Delete an employee</i>
+          </Typography>
       </GridToolbarContainer>
     );
   }
@@ -157,7 +193,17 @@ function EmployeesTable() {
     <Card>
       <SoftBox justifyContent="space-between" p={3}>
         <Stack direction="row" spacing={2} alignItems="center">
-          <Button variant="outlined" onClick={() => setCreateEmployeeModalOpen(true)} sx={buttonStyle}>
+          <Button variant="outlined" onClick={() => {
+            setEmployeeData({
+              name: "",
+              department: "",
+              role: "",
+              date_started: "",
+              date_ended: "",
+              id_number: "",
+              duties: "",
+            });
+            setCreateEmployeeModalOpen(true)}} sx={buttonStyle}>
             <AddIcon />
             Create Employee
           </Button>
@@ -218,6 +264,11 @@ function EmployeesTable() {
 }
 
 function createEmployeeModal(createEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Perform any validation or additional handling before creating the employee
+    handleCreateEmployee();
+  }
   return <Modal
     aria-labelledby="transition-modal-title"
     aria-describedby="transition-modal-description"
@@ -242,11 +293,12 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
         </Box>
 
 
-        <form>
+        <form onSubmit={handleSubmit}>
           {/* <label htmlFor="name">Name</label> */}
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
+              required
                 id="name"
                 name="name"
                 type="text"
@@ -297,6 +349,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
+              required
                 id="id_number"
                 name="id_number"
                 type="text"
@@ -317,6 +370,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
             <FormControl sx={{ flexGrow: 1 }}>
               <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 14 }}>Date Started</InputLabel>
               <TextField
+              required
                 id="date_started"
                 name="date_started"
                 type="date"
@@ -337,6 +391,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
+              required
                 id="role"
                 name="role"
                 type="text"
@@ -359,6 +414,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
+              required
                 id="duties"
                 name="duties"
                 type="text"
@@ -382,13 +438,13 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
 
 
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCreateEmployee}
-            sx={{ mt: 3, width: '100%' }}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "Create Employee"}
-          </Button>
+              variant="contained"
+              color="primary"
+              type="submit"
+              sx={{ mt: 3, width: '100%' }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : "Create Employee"}
+            </Button>
 
         </form>
       </Box>
