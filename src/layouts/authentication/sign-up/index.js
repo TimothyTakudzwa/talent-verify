@@ -112,7 +112,7 @@ function SignUp() {
       // Make the API request to create company 
       const response = await createCompany(formData);
       console.log("Registration response:", response);
-      localStorage.setItem("company", response.id);
+      localStorage.setItem("company", response.data.id);
       console.log(localStorage.getItem("company"));
       setStage('2');
       setIsLoading(false);

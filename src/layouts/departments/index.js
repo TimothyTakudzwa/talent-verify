@@ -69,7 +69,7 @@ function DepartmentsTable() {
   const fetchOnlineDepartments = async () => {
     try {
       const response = await getDepartments();
-      setOnlineRows(response);
+      setOnlineRows(response.data);
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
@@ -88,7 +88,7 @@ function DepartmentsTable() {
     console.log("Form submitted:", localStorage.getItem("company"));
     const data = {
       name: departmentName,
-      company: 1
+      company: localStorage.getItem("company")
     }
     try {
       const response = await createDepartment(data);

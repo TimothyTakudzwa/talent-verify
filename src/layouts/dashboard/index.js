@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import {
-  DataGrid, GridToolbar, GridToolbarContainer,
-  GridToolbarFilterButton, GridToolbarExport
-} from "@mui/x-data-grid";
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-import TextField from '@mui/material/TextField';
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import Fade from '@mui/material/Fade';
-import Modal from '@mui/material/Modal';
-import Backdrop from '@mui/material/Backdrop';
-import MenuItem from '@mui/material/MenuItem';
 import CloseIcon from '@mui/icons-material/Close';
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CircularProgress from '@mui/material/CircularProgress';
+import Fade from '@mui/material/Fade';
 import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Modal from '@mui/material/Modal';
+import Stack from "@mui/material/Stack";
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import {
+  DataGrid, GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarFilterButton
+} from "@mui/x-data-grid";
+import SoftBox from "components/SoftBox";
+import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import React, { useEffect, useState } from "react";
 
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { getEmployees, getDepartments, createEmployee, deleteEmployee as deleteApi } from "services/company";
+import { createEmployee, deleteEmployee as deleteApi, getDepartments, getEmployees } from "services/company";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -55,6 +53,7 @@ function EmployeesTable() {
   const [excelModalOpen, setExcelModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const handleOpen = () => setOpen(true);
+  const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] = React.useState(false);
   const [employeeData, setEmployeeData] = useState({
     name: "",
     department: "",
@@ -94,6 +93,48 @@ function EmployeesTable() {
     }
   };
 
+  const handleCreateDepartment = async () => {
+    setIsLoading(true);
+    console.log(departmentName);
+    console.log("Form submitted:", localStorage.getItem("company"));
+    const data = {
+      name: departmentName,
+      company: localStorage.getItem("company")
+    }
+    try {
+      const response = await createDepartment(data);
+      console.log("Create Department response:", response);
+      if (response.status === 201)
+        MySwal.fire(
+          'Success!',
+          'Department created successfully!',
+          'success'
+        )
+      else {
+        MySwal.fire(
+          'Error!',
+          'Department could not be created!',
+          'error'
+        )
+      }
+    }
+    catch (error) {
+      MySwal.fire(
+        'Error!',
+        'Department could not be created!',
+        'error'
+      );
+      console.error("Error creating department:", error);
+    }
+    fetchOnlineDepartments();
+    setIsLoading(false);
+    setDepartmentName("");
+    handleClose();
+
+
+  };
+
+
   const deleteEmployee = async (id) => {
     setIsLoading(true);
     try {
@@ -129,7 +170,7 @@ function EmployeesTable() {
   const handleCreateEmployee = async () => {
     setIsLoading(true);
     try {
-      employeeData.company = 1;
+      employeeData.company = localStorage.getItem("company")
       employeeData.date_ended = employeeData.date_started;
       const response = await createEmployee(employeeData);
       console.log(response);
@@ -241,7 +282,7 @@ function EmployeesTable() {
             Create Employee
           </Button>
           {/* Create Employee Modal */}
-          {createEmployeeModal(createEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading)}
+          {createEmployeeModal(createEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading,)}
           <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle} onClick={() => setCsvModalOpen(true)}>
             Upload from CSV
           </Button>
@@ -296,7 +337,7 @@ function EmployeesTable() {
   );
 }
 
-function createEmployeeModal(createEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading) {
+function createEmployeeModal(createEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, handleOpen) {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Perform any validation or additional handling before creating the employee
@@ -355,7 +396,11 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
                 id="demo-simple-select-helper"
                 label="Department"
                 value={employeeData.department}
-                onChange={(e) => setEmployeeData({ ...employeeData, department: e.target.value })}
+                onChange={(e) => {
+                  if (e.target.value === "create") {
+                    handleOpen
+                  }
+                  setEmployeeData({ ...employeeData, department: e.target.value })}}
                 // onChange={handleDepartmentChange}
                 variant="outlined"
                 margin="normal"
@@ -368,9 +413,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
                   },
                 }}
               >
-                <MenuItem value="create">
-                  <AddIcon /> Create New Department
-                </MenuItem>
+               
                 {departments.map((department) => (
                   <MenuItem key={department.id} value={department.id}>
                     {department.name}
@@ -552,9 +595,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                   },
                 }}
               >
-                <MenuItem value="create">
-                  <AddIcon /> Create New Department
-                </MenuItem>
+                
                 {departments.map((department) => (
                   <MenuItem key={department.id} value={department.id}>
                     {department.name}
@@ -681,6 +722,57 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
     </Fade>
   </Modal>;
 }
+
+function createDepartmentModal(open, handleClose, departmentName, setDepartmentName, handleCreateDepartment, isLoading) {
+  return <Modal
+    aria-labelledby="transition-modal-title"
+    aria-describedby="transition-modal-description"
+    open={open}
+    onClose={handleClose}
+    closeAfterTransition
+    BackdropComponent={Backdrop}
+    BackdropProps={{
+      timeout: 500,
+    }}
+  >
+    <Fade in={open}>
+      <Box sx={style}>
+        <Typography id="transition-modal-title" variant="h6" component="h2">
+          {/* Add a plus icon */}
+          Create Department
+        </Typography>
+
+
+        <form>
+
+          <TextField
+            id="department-name"
+            label="Department Name"
+            variant="outlined"
+            fullWidth
+            value={departmentName}
+            onChange={(e) => setDepartmentName(e.target.value)}
+            sx={{
+              mt: 3,
+              "& label": {
+                fontSize: "14px", // Adjust the font size as needed
+              },
+            }} />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateDepartment}
+            sx={{ mt: 3, width: '100%' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Create Department"}
+          </Button>
+
+        </form>
+      </Box>
+    </Fade>
+  </Modal>;
+}
+
 
 // Employees component displays the Dashboard layout with the EmployeesTable
 function Employees() {
