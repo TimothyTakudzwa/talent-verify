@@ -26,7 +26,7 @@ import InputLabel from '@mui/material/InputLabel';
 
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { getEmployees, getDepartments, createEmployee } from "services/company";
+import { getEmployees, getDepartments, createEmployee, deleteEmployee as deleteApi } from "services/company";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -34,7 +34,7 @@ const MySwal = withReactContent(Swal)
 
 // EmployeesTable component displays a DataGrid with online employee data
 function EmployeesTable() {
-  
+
   // Define the columns for the DataGrid
   const onlineColumns = [
     { field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'super-app-theme--header' },
@@ -70,7 +70,7 @@ function EmployeesTable() {
   const fetchOnlineEmployees = async () => {
     try {
       const response = await getEmployees();
-      setOnlineRows(response);
+      setOnlineRows(response.data);
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
@@ -86,11 +86,43 @@ function EmployeesTable() {
   const fetchOnlineDepartments = async () => {
     try {
       const response = await getDepartments();
-      setDepartments(response);
+      setDepartments(response.data);
       console.log(response);
       // setOnlineRows(response);
     } catch (error) {
       console.error("Error fetching departments:", error);
+    }
+  };
+
+  const deleteEmployee = async (id) => {
+    setIsLoading(true);
+    try {
+      const response = await deleteApi(id);
+      console.log(response);
+      setIsLoading(false);
+      setViewEmployeeModalOpen(false);
+      console.log(response.status)
+      fetchOnlineEmployees();
+      if (response.status === 204)
+        MySwal.fire(
+          'Success!',
+          'Employee deleted successfully!',
+          'success'
+        )
+      else {
+        MySwal.fire(
+          'Error!',
+          'Employee could not be deleted!',
+          'error'
+        )
+      }
+    } catch (error) {
+      MySwal.fire(
+        'Error!',
+        'Employee could not be deleted!',
+        'error'
+      )
+      console.error("Error deleting employee:", error);
     }
   };
 
@@ -106,24 +138,24 @@ function EmployeesTable() {
       if (response.status === 201)
         MySwal.fire(
           'Success!',
-          'Department created successfully!',
+          'Employee created successfully!',
           'success'
         )
       else {
         MySwal.fire(
           'Error!',
-          'Department could not be created!',
+          'Employee could not be created!',
           'error'
         )
       }
-      
+
       // setCreateEmployeeModalOpen(false);
       fetchOnlineEmployees();
     } catch (error) {
-      
+
       MySwal.fire(
         'Error!',
-        'Department could not be created!',
+        'Employee could not be created!',
         'error'
       )
       console.error("Error creating employee:", error);
@@ -181,9 +213,9 @@ function EmployeesTable() {
         {/* <GridToolbarDensitySelector /> */}
         <GridToolbarExport sx={toolBarStyle} variant="outlined" />
         {/* Click on a row to view/edit employee in red  */}
-        <Typography id="transition-modal-title" variant="h6" component="h2" sx={{color:'red'}}>
-            <i>Click on an employee to View/Edit/Delete an employee</i>
-          </Typography>
+        <Typography id="transition-modal-title" variant="h6" component="h2" sx={{ color: 'red' }}>
+          <i>Click on an employee to View/Edit/Delete an employee</i>
+        </Typography>
       </GridToolbarContainer>
     );
   }
@@ -203,7 +235,8 @@ function EmployeesTable() {
               id_number: "",
               duties: "",
             });
-            setCreateEmployeeModalOpen(true)}} sx={buttonStyle}>
+            setCreateEmployeeModalOpen(true)
+          }} sx={buttonStyle}>
             <AddIcon />
             Create Employee
           </Button>
@@ -253,10 +286,10 @@ function EmployeesTable() {
                 paginationModel: { page: 0, pageSize: 10 },
               },
             }}
-            // pageSizeOptions={[5, 10, 20, 50, 100]}
+          // pageSizeOptions={[5, 10, 20, 50, 100]}
 
           />
-          {viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading)}
+          {viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee)}
         </SoftBox>
       </div>
     </Card>
@@ -298,7 +331,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
-              required
+                required
                 id="name"
                 name="name"
                 type="text"
@@ -349,7 +382,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
-              required
+                required
                 id="id_number"
                 name="id_number"
                 type="text"
@@ -370,7 +403,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
             <FormControl sx={{ flexGrow: 1 }}>
               <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 14 }}>Date Started</InputLabel>
               <TextField
-              required
+                required
                 id="date_started"
                 name="date_started"
                 type="date"
@@ -391,7 +424,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
-              required
+                required
                 id="role"
                 name="role"
                 type="text"
@@ -414,7 +447,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
           <Stack direction="row">
             <FormControl sx={{ flexGrow: 1 }}>
               <TextField
-              required
+                required
                 id="duties"
                 name="duties"
                 type="text"
@@ -438,13 +471,13 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
 
 
           <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              sx={{ mt: 3, width: '100%' }}
-            >
-              {isLoading ? <CircularProgress size={24} /> : "Create Employee"}
-            </Button>
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{ mt: 3, width: '100%' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Create Employee"}
+          </Button>
 
         </form>
       </Box>
@@ -452,8 +485,8 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
   </Modal>;
 }
 
-function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading) {
-  const defaultDepartmentId = departments.length > 0 ? departments[0].id : "";
+function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee) {
+  // const defaultDepartmentId = departments.length > 0 ? departments[0].id : "1";
   return <Modal
     aria-labelledby="transition-modal-title"
     aria-describedby="transition-modal-description"
@@ -505,7 +538,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 label="Department"
-                value={employeeData.department || defaultDepartmentId}
+                value={employeeData.department}
                 onChange={(e) => setEmployeeData({ ...employeeData, department: e.target.value })}
                 // onChange={handleDepartmentChange}
                 variant="outlined"
@@ -616,33 +649,33 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
 
           </Stack>
 
-              <Stack direction="row">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCreateEmployee}
-            sx={{ mt: 3, mr:1, width: '50%' }}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "Edit"}
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            // color="danger"
-            onClick={handleCreateEmployee}
-            sx={{ mt: 3, width: '50%', mr:1, color: '#ffffff' }}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "History"}
-          </Button>
-          <Button
-            variant="contained"
-            // color="danger"
-            onClick={handleCreateEmployee}
-            sx={{ mt: 3, width: '50%', backgroundColor: '#f44336', color: '#ffffff' }}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "Delete"}
-          </Button>
-</Stack>
+          <Stack direction="row">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreateEmployee}
+              sx={{ mt: 3, mr: 1, width: '50%' }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : "Edit"}
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              // color="danger"
+              onClick={handleCreateEmployee}
+              sx={{ mt: 3, width: '50%', mr: 1, color: '#ffffff' }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : "History"}
+            </Button>
+            <Button
+              variant="contained"
+              // color="danger"
+              onClick={() => deleteEmployee(employeeData.id)}
+              sx={{ mt: 3, width: '50%', backgroundColor: '#f44336', color: '#ffffff' }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : "Delete"}
+            </Button>
+          </Stack>
         </form>
       </Box>
     </Fade>

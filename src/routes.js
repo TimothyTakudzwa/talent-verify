@@ -72,6 +72,24 @@ const routes = [
     component: <VirtualReality />,
     noCollapse: true,
   },
+  {
+    type: "collapse",
+    name: "Registration",
+    key: "register",
+    route: "/register",
+    icon: <Cube size="12px" />,
+    component: <SignUp />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "Login",
+    key: "login",
+    route: "/",
+    icon: <Cube size="12px" />,
+    component: <SignIn />,
+    noCollapse: true,
+  },
  
 ];
 

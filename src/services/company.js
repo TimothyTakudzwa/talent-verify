@@ -18,7 +18,7 @@ const makeAuthorizedRequest = (method, url, formData = null) => {
   return axios(config)
     .then((response) => {
       console.log(response);
-      return response.data;
+      return response;
     })
     .catch((error) => {
       console.error("Error making API request:", error);
