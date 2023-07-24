@@ -328,6 +328,11 @@ function EmployeesTable() {
             onRowClick={(e) => {
               setEmployeeData(e.row);
               console.log(e.row);
+              // look for the department id from departments using the department name
+              const department = departments.find(department => department.name === e.row.department);
+              console.log(department)
+              setEmployeeData({ ...e.row, department: department })
+              console.log(employeeData)
               setViewEmployeeModalOpen(true)
             }}
             onFilterModelChange={(model) => {
@@ -342,7 +347,7 @@ function EmployeesTable() {
           // pageSizeOptions={[5, 10, 20, 50, 100]}
 
           />
-          {viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee)}
+          {viewEmployeeModal(fetchOnlineEmployees, viewEmployeeModalOpen, setViewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee)}
         </SoftBox>
       </div>
     </Card>
@@ -540,15 +545,37 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
   </Modal>;
 }
 
-function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee) {
+function viewEmployeeModal(fetchOnlineEmployees, viewEmployeeModalOpen, setViewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee) {
   // const defaultDepartmentId = departments.length > 0 ? departments[0].id : "1";
   const [editDepartment, setEditDepartment] = useState(false);
   const editEmployee = async () => {
     console.log(employeeData.id)
     employeeData.company = localStorage.getItem("company")
+    // check if employee.department is an integer 
+    if (typeof employeeData.department === 'object')
+      employeeData.department = employeeData.department.id
+    console.log(employeeData)
+    
     // setIsLoading(true);
     var response = await updateEmployee(employeeData.id, employeeData);
     console.log(response.data);
+    setViewEmployeeModalOpen(false);
+    fetchOnlineEmployees()
+    if (response.status === 200)
+      MySwal.fire(
+        'Success!',
+        'Employee updated successfully!',
+        'success'
+      )
+    else {
+      MySwal.fire(
+        'Error!',
+        'Employee could not be updated!',
+        'error'
+      )
+    }
+    // close the modal 
+    
 
   }
   return <Modal
@@ -603,8 +630,8 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                 disabled
                 name="name"
                 type="text"
-                label="Department "
-                value={employeeData.department}
+                // label="Department "
+                value={employeeData.department.name}
                 // onChange={(e) => setEmployeeData({ ...employeeData, name: e.target.value })}
                 variant="outlined"
                 // margin="normal"
@@ -618,7 +645,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
             </FormControl>
 {/* } */}
             <FormControl sx={{ minWidth: 5 }}>
-              <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 12 }}>Department Edit</InputLabel>
+              <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 12 }}>Edit Dept</InputLabel>
               <Select
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
