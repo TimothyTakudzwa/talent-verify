@@ -24,7 +24,7 @@ import React, { useEffect, useState } from "react";
 
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { createEmployee, deleteEmployee as deleteApi, getDepartments, getEmployees } from "services/company";
+import { createEmployee, deleteEmployee as deleteApi, getDepartments, getEmployees, updateEmployee } from "services/company";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -74,6 +74,8 @@ function EmployeesTable() {
       console.error("Error fetching employees:", error);
     }
   };
+
+
 
   const closeModals = () => {
     setCreateEmployeeModalOpen(false);
@@ -276,7 +278,17 @@ function EmployeesTable() {
               id_number: "",
               duties: "",
             });
-            setCreateEmployeeModalOpen(true)
+            if (departments.length < 1){
+              MySwal.fire(
+                'Error!',
+                'You need to create a department first!',
+                'error'
+              )
+            }
+            else{
+              setCreateEmployeeModalOpen(true)
+            }
+            
           }} sx={buttonStyle}>
             <AddIcon />
             Create Employee
@@ -530,6 +542,15 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
 
 function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading, deleteEmployee) {
   // const defaultDepartmentId = departments.length > 0 ? departments[0].id : "1";
+  const [editDepartment, setEditDepartment] = useState(false);
+  const editEmployee = async () => {
+    console.log(employeeData.id)
+    employeeData.company = localStorage.getItem("company")
+    // setIsLoading(true);
+    var response = await updateEmployee(employeeData.id, employeeData);
+    console.log(response.data);
+
+  }
   return <Modal
     aria-labelledby="transition-modal-title"
     aria-describedby="transition-modal-description"
@@ -575,14 +596,37 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                   },
                 }} />
             </FormControl>
-            <FormControl sx={{ minWidth: 200 }}>
-              <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 14 }}>Department</InputLabel>
+            {/* {!editDepartment? null : */}
+            <FormControl sx={{ flexGrow: 1 }}>
+              <TextField
+                id="name"
+                disabled
+                name="name"
+                type="text"
+                label="Department "
+                value={employeeData.department}
+                // onChange={(e) => setEmployeeData({ ...employeeData, name: e.target.value })}
+                variant="outlined"
+                // margin="normal"
+                sx={{
+                  mt: 3,
+                  mr: 2,
+                  "& label": {
+                    fontSize: "14px",
+                  },
+                }} />
+            </FormControl>
+{/* } */}
+            <FormControl sx={{ minWidth: 5 }}>
+              <InputLabel id="demo-simple-select-helper-label" sx={{ fontSize: 12 }}>Department Edit</InputLabel>
               <Select
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
-                label="Department"
+                label="Department Edit"
                 value={employeeData.department}
-                onChange={(e) => setEmployeeData({ ...employeeData, department: e.target.value })}
+                onChange={(e) => {
+                  setEditDepartment(true)
+                  setEmployeeData({ ...employeeData, department: e.target.value })}}
                 // onChange={handleDepartmentChange}
                 variant="outlined"
                 margin="normal"
@@ -694,7 +738,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
             <Button
               variant="contained"
               color="primary"
-              onClick={handleCreateEmployee}
+              onClick={editEmployee}
               sx={{ mt: 3, mr: 1, width: '50%' }}
             >
               {isLoading ? <CircularProgress size={24} /> : "Edit"}
