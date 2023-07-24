@@ -453,6 +453,7 @@ function createEmployeeModal(createEmployeeModalOpen, style, closeModals, button
 }
 
 function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyle, employeeData, setEmployeeData, departments, handleCreateEmployee, isLoading) {
+  const defaultDepartmentId = departments.length > 0 ? departments[0].id : "";
   return <Modal
     aria-labelledby="transition-modal-title"
     aria-describedby="transition-modal-description"
@@ -504,7 +505,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 label="Department"
-                value={employeeData.department}
+                value={employeeData.department || defaultDepartmentId}
                 onChange={(e) => setEmployeeData({ ...employeeData, department: e.target.value })}
                 // onChange={handleDepartmentChange}
                 variant="outlined"
@@ -556,7 +557,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
                 name="date_started"
                 type="date"
                 // label="Date Started"
-                // value={employeeData.date_started}
+                value={employeeData.date_started}
                 onChange={(e) => setEmployeeData({ ...employeeData, date_started: e.target.value })}
                 variant="outlined"
                 // margin="normal"
@@ -622,7 +623,16 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
             onClick={handleCreateEmployee}
             sx={{ mt: 3, mr:1, width: '50%' }}
           >
-            {isLoading ? <CircularProgress size={24} /> : "Edit Employee"}
+            {isLoading ? <CircularProgress size={24} /> : "Edit"}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            // color="danger"
+            onClick={handleCreateEmployee}
+            sx={{ mt: 3, width: '50%', mr:1, color: '#ffffff' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "History"}
           </Button>
           <Button
             variant="contained"
@@ -630,7 +640,7 @@ function viewEmployeeModal(viewEmployeeModalOpen, style, closeModals, buttonStyl
             onClick={handleCreateEmployee}
             sx={{ mt: 3, width: '50%', backgroundColor: '#f44336', color: '#ffffff' }}
           >
-            {isLoading ? <CircularProgress size={24} /> : "Delete Employee"}
+            {isLoading ? <CircularProgress size={24} /> : "Delete"}
           </Button>
 </Stack>
         </form>
