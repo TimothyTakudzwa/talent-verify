@@ -1,42 +1,31 @@
-import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+import Card from "@mui/material/Card";
+import Fade from '@mui/material/Fade';
+import Modal from '@mui/material/Modal';
 import Stack from "@mui/material/Stack";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-// Papa
-import Papa from "papaparse";
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import SoftBox from "components/SoftBox";
+import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import React, { useEffect, useState } from "react";
+
 import CloseIcon from "@mui/icons-material/Close";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
+import Papa from "papaparse";
 
 
-// CircularProgress
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from "@mui/material/IconButton";
+
 import AddIcon from "@mui/icons-material/Add";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 
 
-import { getDepartments, createDepartment } from "services/company";
+import { createDepartment, getDepartments } from "services/company";
 const MySwal = withReactContent(Swal)
 // DepartmentsTable component displays a DataGrid with online employee data
 function DepartmentsTable() {
@@ -47,6 +36,7 @@ function DepartmentsTable() {
 
   ];
   const [open, setOpen] = React.useState(false);
+  const [excelModalOpen, setExcelModalOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
 
@@ -59,6 +49,7 @@ function DepartmentsTable() {
     setErrorMessage(" ");
     setCsvModalOpen(false);
     setCsvModal2Open(false);
+    setExcelModalOpen(false);
     setOpen(false);
   };
   const [csvModal2Open, setCsvModal2Open] = useState(false);
@@ -68,6 +59,7 @@ function DepartmentsTable() {
   const [clean, setIsClean] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [cleanCsvData, setCleanCsvData] = useState([]);
+
 
 
 
@@ -88,18 +80,6 @@ function DepartmentsTable() {
     fetchOnlineDepartments();
   }, []);
 
-  const handleUploadCsv = () => {
-    if (!csvFile) {
-      console.log("No CSV file selected");
-      return;
-    }
-
-    // Here, you can perform the CSV file upload action using 'csvFile'
-    console.log("Uploading CSV file:", csvFile);
-
-    // Reset the file input after uploading
-    setCsvFile(null);
-  };
 
 
   const handleCreateDepartment = async () => {
@@ -114,12 +94,12 @@ function DepartmentsTable() {
       const response = await createDepartment(data);
       console.log("Create Department response:", response);
       if (response.status === 201)
-      MySwal.fire(
-        'Success!',
-        'Department created successfully!',
-        'success'
-      )
-      else{
+        MySwal.fire(
+          'Success!',
+          'Department created successfully!',
+          'success'
+        )
+      else {
         MySwal.fire(
           'Error!',
           'Department could not be created!',
@@ -195,11 +175,11 @@ function DepartmentsTable() {
       try {
         const response = createDepartment(data);
         console.log("Create Department response:", response);
-       
+
         departments_created = departments_created + 1;
       }
       catch (error) {
-        
+
         console.error("Error creating department:", error);
       }
     }
@@ -228,7 +208,7 @@ function DepartmentsTable() {
             Upload from CSV
           </Button>
 
-          <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
+          <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle} onClick={() => setExcelModalOpen(true)}>
             Upload from Excel
           </Button>
           <Button variant="outlined" startIcon={<CloudUploadIcon />} sx={buttonStyle}>
@@ -279,7 +259,7 @@ function DepartmentsTable() {
                 />
                 {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
                 {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
-                { clean ? <Button variant="contained"   color="primary"  onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button>: null}
+                {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
 
               </form>
             </Box>
@@ -372,6 +352,59 @@ function DepartmentsTable() {
             </Box>
           </Fade>
         </Modal>
+        {/* Upload from excel modal  */}
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={excelModalOpen}
+          onClose={handleClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={excelModalOpen}>
+            <Box sx={style}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                <Typography id="transition-modal-title" variant="h6" component="h2">
+                  Upload Departments from Excel
+                </Typography>
+                <Button variant="outlined" onClick={handleClose} sx={buttonStyle}>
+                  <CloseIcon />
+                </Button>
+              </Box>
+              <form>
+                {/* red text instructing the person to upload csv with column name */}
+                <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}>
+                  Please upload a Excel file with the column name  for the department name
+                </Typography>
+                <TextField
+                  id="department-name"
+                  type="file"
+                  variant="outlined"
+                  fullWidth
+                  value={departmentName}
+                  onChange={changeHandler}
+                  inputProps={{ accept: ".xlsx, .xls" }} // Update to accept Excel files
+                  sx={{
+                    mt: 3,
+                    "& label": {
+                      fontSize: "14px", // Adjust the font size as needed
+                    },
+                  }}
+                />
+
+                {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
+                {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
+                {clean ? <Button variant="contained" color="primary" onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button> : null}
+
+              </form>
+            </Box>
+          </Fade>
+        </Modal>
+
+
 
       </SoftBox>
       <div style={{ width: '100%' }}>
