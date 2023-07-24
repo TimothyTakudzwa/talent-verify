@@ -49,11 +49,14 @@ function DepartmentsTable() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
-  
+
   const [departmentName, setDepartmentName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [csvModalOpen, setCsvModalOpen] = useState(false);
   const handleClose = () => {
+    setIsClean(false);
+    setHasError(false);
+    setErrorMessage(" ");
     setCsvModalOpen(false);
   };
   const [csvModal2Open, setCsvModal2Open] = useState(false);
@@ -149,7 +152,7 @@ function DepartmentsTable() {
         console.log(data);
         // Check if "name" field is present in the data
         const hasNameField = data.some((row) => row.hasOwnProperty("name"));
-  
+
         if (!hasNameField) {
           console.log("Invalid CSV: Missing 'name' field");
           setHasError(true);
@@ -162,24 +165,52 @@ function DepartmentsTable() {
         const cleanData = data.filter((row) => row.name !== "");
 
 
-  
+
         setCsvData(cleanData);
       },
     });
-    
+
   };
 
   const handleUploadCsv2 = () => {
-  console.log(csvData);
-  for (let i = 0; i < csvData.length; i++) {
-    const data = {
-      name: csvData[i].name,
-      company: 1
+    setIsLoading(true);
+    console.log(csvData);
+    for (let i = 0; i < csvData.length; i++) {
+      const data = {
+        name: csvData[i].name,
+        company: 1
+      }
+      console.log(data);
+      var departments_created = 0;
+      try {
+        const response = createDepartment(data);
+        console.log("Create Department response:", response);
+        i = i + 1;
+        // MySwal.fire(
+        //   'Success!',
+        //   'Department created successfully!',
+        //   'success'
+        // )
+      }
+      catch (error) {
+        // MySwal.fire(
+        //   'Error!',
+        //   'Department could not be created!',
+        //   'error'
+        // );
+        console.error("Error creating department:", error);
+      }
     }
-    console.log(data);
-    
-    // createDepartment(data);
-  }
+    setIsLoading(false);
+    fetchOnlineDepartments();
+    MySwal.fire(
+      'Success!',
+      'Created ' + departments_created + ' departments successfully!',
+      'success'
+    );
+    setCsvModal2Open(false);
+    setCsvModalOpen(false);
+
   }
 
   return (
@@ -244,16 +275,9 @@ function DepartmentsTable() {
                     },
                   }}
                 />
-                {hasError?<Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography>  : null}
+                {hasError ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "red" }}> {errorMessage}  </Typography> : null}
                 {clean ? <Typography id="transition-modal-description" variant="body2" component="h5" sx={{ color: "green" }}> CSV file is clean. Number of clean rows {csvData.length}  </Typography> : null}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleUploadCsv2}
-                  sx={{ mt: 3, width: '100%' }}
-                >
-                  {isLoading ? <CircularProgress size={24} /> : "Create Department"}
-                </Button>
+                { clean ? <Button variant="contained"   color="primary"  onClick={handleUploadCsv2} sx={{ mt: 3, width: '100%' }}   >  {isLoading ? <CircularProgress size={24} /> : "Start batch process"}  </Button>: null}
 
               </form>
             </Box>

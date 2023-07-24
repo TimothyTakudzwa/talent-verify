@@ -22,7 +22,7 @@ const makeAuthorizedRequest = (method, url, formData = null) => {
     })
     .catch((error) => {
       console.error("Error making API request:", error);
-      throw error;
+    //   throw error;
     });
 };
 // Create a company
