@@ -50,6 +50,7 @@ function SignIn() {
       const response = await login(formData.username, formData.password);
       console.log("Login response:", response);
       localStorage.setItem("token", response.access);
+      localStorage.setItem("company", response.company)
       // Redirect to the dashboard
       navigate('/dashboard', { replace: true });
       
